@@ -56,7 +56,7 @@ You should care about our product because it offers a solution to a major pain p
 
 ## Minimum Viable Product (MVP)
 
-![MVP](assets\MVP.png)
+![MVP](./assets/MVP.png)
 
 ## Stretch
 
