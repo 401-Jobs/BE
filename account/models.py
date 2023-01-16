@@ -19,6 +19,8 @@ class CustomUser(AbstractUser):
             'access':str(refresh.access_token)
 
         }
+
+
 class JobSeeker(models.Model):
     owner= models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
     phone_number=models.CharField(max_length=200,null=True)
@@ -27,19 +29,24 @@ class JobSeeker(models.Model):
     IsSubscribed=models.BooleanField(default=False,null=True)
     experiance = models.IntegerField(default=0,null=True)
 
+
+
 class UserMedia(models.Model):
         video=models.FileField(upload_to='media/%y',null=True)
         image=models.FileField(upload_to='media/%y',null=True)
         owner=models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
         CV=models.FileField(upload_to='media/%y',null=True)
 
+
 class ClientDetails(models.Model):
     education=models.CharField(max_length=200, null=True)
-    skilles=models.TextField() 
+    skilles=models.TextField(null=True)
     country = models.CharField(max_length=200,null=True)
     city = models.CharField(max_length=200,null=True)
     jobTitle = models.CharField(max_length=200,null=True)
     owner=models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
+
+
 
 class Company(models.Model):
     owner = models.ForeignKey( CustomUser,on_delete=models.CASCADE, null=True, blank=True     )
@@ -49,6 +56,7 @@ class Company(models.Model):
     company_address = models.CharField( max_length=150,null=True)
     about_company = models.TextField(null=True)
     logo = models.FileField(upload_to='media/%y',null=True)
+
 
 class Interview(models.Model):
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True     )

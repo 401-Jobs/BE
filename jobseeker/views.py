@@ -8,6 +8,7 @@ from .serializer import MediaSerializer,ClientDetailsSerializer,JobSeekerSeriali
 from .permissions import IsJobSeeker,IsOwner,IsOwnerForMedia    
 # Create your views here.
 class JobseekerView(ListCreateAPIView):
+    queryset=UserMedia.objects.all()
     def get_queryset(self):
         print(self.request.user)
         return JobSeeker.objects.filter(owner=self.request.user)
