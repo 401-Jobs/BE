@@ -9,9 +9,7 @@ from .permissions import IsJobSeeker,IsOwner,IsOwnerForMedia
 # Create your views here.
 class JobseekerView(ListCreateAPIView):
     def get_queryset(self):
- 
         print(self.request.user)
-
         return JobSeeker.objects.filter(owner=self.request.user)
     serializer_class=JobSeekerSerializer
     permission_classes=[IsJobSeeker]

@@ -15,6 +15,50 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 # Create your views here.
+from account.models import JobSeeker,ClientDetails,UserMedia, Company
+
+
+
+def init_new_jobseeker_user(user):
+  seeker = JobSeeker(owner=user,        
+    phone_number= None,
+    github =   None,   
+    protofolio=   None,
+    IsSubscribed= None,
+    experiance =  None,)
+
+  seekerMedia = UserMedia(  video=None, 
+    image=None, 
+    owner=user, 
+    CV=   None, )
+
+  seekerDetails = ClientDetails( education=None,
+    skilles=  None,
+    country=  None,
+    city=  None,
+    jobTitle=  None,
+    owner=    user,)
+
+  seeker.save()
+  seekerMedia.save()
+  seekerDetails.save()
+
+def init_new_company_user(user):
+  print(user)
+  company = Company(
+    owner = user,
+    phone = None,
+    company_name = None,
+    company_website = None,
+    company_address = None,
+    about_company = None,
+    logo =  None
+  )
+
+  company.save()
+
+
+
 class RegisterView(generics.GenericAPIView):
     serializer_class=RegisterSerializer
     def post(self,request):
@@ -25,16 +69,13 @@ class RegisterView(generics.GenericAPIView):
 
         user_data=serializer.data
 
-
         user=User.objects.get(email=user_data['email'])
-
         token=RefreshToken.for_user(user).access_token
-
         current_site=get_current_site(request).domain
         relativeLink=reverse('verify')
         absurl='http://'+current_site+relativeLink+"?token="+str(token)
         email_body='Hi '+user.username+' use link below to verifiy\n'+absurl
-        data={'email_body':email_body,'to_email':user.email,'email_subject':'verify your email'}
+        data={'email_body':email_body,'to_email':user.email,'email_subject':'Verify Your Email'}
         Util.send_email(data)
         print(user_data)
         return Response(user_data,status=status.HTTP_201_CREATED)
@@ -52,6 +93,12 @@ class VerifyEmail(views.APIView):
         if not user.is_verified:
             user.is_verified=True
             user.save()
+            if user.is_company == False: 
+              init_new_jobseeker_user(user)
+            else:
+              init_new_company_user(user)
+   
+        # Return Rediriect to React verified Page
         return Response({'email':'Successfuly activated'},status=status.HTTP_200_OK)
       except jwt.ExpiredSignatureError  as identifier:
         return Response({'error':'Actiation  Expired'},status=status.HTTP_400_BAD_REQUEST)

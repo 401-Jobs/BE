@@ -16,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
         }
     )
     )
-admin.site.register(CustomUser,CustomUserAdmin)
+admin.site.register(CustomUser)
 admin.site.register(Company)
 admin.site.register(ClientDetails)
 admin.site.register(JobSeeker)

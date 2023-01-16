@@ -7,10 +7,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=User
-        fields=['email','username','password']
+        fields=['email','username','password',"is_company"]
     def validate(self, attrs):
         email=attrs.get('email', '')
         username=attrs.get('username', '')
+        is_company = attrs.get('is_company', '')
+        print("INSIDE SERALIZERS")
+        print(is_company)
         if not username.isalnum():
             raise serializers.ValidationError('usre name should only have a char')
         return attrs
