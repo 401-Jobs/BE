@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .renderers import UserJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
+from account.models import CustomUser as User
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -36,13 +36,14 @@ class RegisterView(generics.GenericAPIView):
         email_body='Hi '+user.username+' use link below to verifiy\n'+absurl
         data={'email_body':email_body,'to_email':user.email,'email_subject':'verify your email'}
         Util.send_email(data)
+        print(user_data)
         return Response(user_data,status=status.HTTP_201_CREATED)
 
 class VerifyEmail(views.APIView):
     serializer_class=EmailVerification
 
     token_param_config=openapi.Parameter('token',in_=openapi.IN_QUERY,description='Dscription',type=openapi.TYPE_STRING)
-    @swagger_auto_schema(manual_parameters=[token_param_config])
+    # @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self,request):
       token=request.GET.get('token')
       try:
