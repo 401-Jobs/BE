@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from rest_framework import generics,status,views
-from .serializers import RegisterSerializer,EmailVerification,LoginSerializer
+from rest_framework import generics,status,views,permissions
+from .serializers import RegisterSerializer,EmailVerification,LoginSerializer,LogoutSerializer
 from rest_framework.response import Response
 from .renderers import UserJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -113,3 +113,12 @@ class LoginApiView(generics.GenericAPIView):
     serializer=self.serializer_class(data=user)
     serializer.is_valid(raise_exception=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
+class LogoutApiView(generics.GenericAPIView):
+  permission_classes = (permissions.IsAuthenticated,)
+  serializer_class=LogoutSerializer
+  def post(self,request):
+    user=request.data
+    serializer=self.serializer_class(data=user)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data,status=status.HTTP_204_NO_CONTENT)
