@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken
 # Create your models here.
+
+
 class CustomUser(AbstractUser):
     username=models.CharField(max_length=255,unique=True)
     email=models.EmailField(max_length=255,unique=True)
@@ -37,9 +39,6 @@ class JobSeeker(models.Model):
     def __str__(self) -> str:
         return self.owner.username
 
-
-
-    
 
 class UserMedia(models.Model):
         video=models.FileField(upload_to='media/%y',null=True)
@@ -77,6 +76,9 @@ class Company(models.Model):
 class RecentlyViewd(models.Model):
     jobseeker= models.ForeignKey( JobSeeker,on_delete=models.CASCADE, null=True, blank=True)
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return  self.company.company_name + " Viewd " + self.jobseeker.owner.username
 
 class Interview(models.Model):
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True     )
