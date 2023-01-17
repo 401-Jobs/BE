@@ -5,9 +5,6 @@ class IsJobSeeker(BasePermission):
 
         print("INISDE PERMISSION : ", request.user.is_authenticated)
 
-        if request.method == 'GET' :
-            return True
-        
         if  request.user.is_authenticated and not request.user.is_company:
             return True
         return False

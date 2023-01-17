@@ -1,6 +1,6 @@
-from account.models import JobSeeker,ClientDetails,UserMedia,Interview
+from account.models import JobSeeker,ClientDetails,UserMedia,Interview,Company,RecentlyViewd
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView 
-from .serializer import InterviewsSerializer, MediaSerializer,ClientDetailsSerializer,JobSeekerSerializer
+from .serializer import InterviewsSerializer, MediaSerializer,ClientDetailsSerializer,JobSeekerSerializer,CompanySerializer,RecentlyViewdSerializer
 from .permissions import IsJobSeeker,IsOwner,IsOwnerForMedia    
 from rest_framework import authentication
 from django.http import JsonResponse
@@ -10,12 +10,6 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework import status
 from rest_framework.response import Response
-
-
-
-
-
-
 
 
 
@@ -69,9 +63,47 @@ class GetJobSeekerInterview(APIView):
     permission_classes=[IsJobSeeker,IsAuthenticated]
     def get(self, request, *args, **kwargs):
         user = JobSeeker.objects.filter(owner = request.user)
-        interviews=Interview.objects.filter(jobseeker=user[0]) 
+        interviews=Interview.objects.filter(jobseeker=user[0])
+        
+        companies = []
+
+        for interview in interviews:
+            companies.append(interview.company)
 
         s1 = InterviewsSerializer(interviews,many=True)
+        s2 = CompanySerializer(companies,many=True)
+        data = {"interviews" : s1.data , "companies" : s2.data }
+        return JsonResponse (data,safe=False,status=200)
 
-        data = {"interviews" : s1.data }
+
+class UpdateInterviewConfirmation(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def put(self, request, *args, **kwargs):
+
+        data = json.loads(request.body)
+
+        interview=Interview.objects.get(id=data['id'])  # GETS YOU THE INTERVIEw QUERYSET
+ 
+        interview.isApproved_jobseeker = data['status'] # FIELDS OF INTERVIEW QUERYSET
+
+        interview.save() # SAVE
+
+        s1 = InterviewsSerializer(interview,many=False) # JSON ONLY
+        data = {"interview" : s1.data }
+        return JsonResponse (data,safe=False,status=200)
+
+
+class GetJobSeekerRecentlyViewed(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+
+        jobseker = JobSeeker.objects.get(owner = request.user)
+        allviews = RecentlyViewd.objects.filter(jobseeker = jobseker) # Array
+
+        companies = [ ]
+        for view in allviews:
+            companies.append(view.company)
+
+        s1 = CompanySerializer(companies,many=True)
+        data = {"View" : s1.data[-1] }
         return JsonResponse (data,safe=False,status=200)
