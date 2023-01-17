@@ -1,0 +1,41 @@
+Landing Page
+Contact US Page
+About Us Page
+
+================
+
+Login Page
+Forgot Password
+
+================
+
+
+
+Sign Up Client
+	Personal Details
+	Education
+	Work Experiance
+	Skills
+	SoftSkills
+
+
+Sign UP Companies
+
+=================
+
+Home Page Client
+Profile Page Client
+
+
+
+Home Page Companies
+Profile Page Companies
+Search For Canddiates Page
+
+===========================================
+
+
+	
+	
+
+	

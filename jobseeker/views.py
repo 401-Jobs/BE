@@ -1,42 +1,73 @@
-from django.shortcuts import render
-from account.models import JobSeeker,ClientDetails,UserMedia
-from rest_framework.views import APIView
-from rest_framework.response import Response
-import requests
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
-from .serializer import MediaSerializer,ClientDetailsSerializer,JobSeekerSerializer
+from account.models import JobSeeker,ClientDetails,UserMedia,Interview
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView 
+from .serializer import InterviewsSerializer, MediaSerializer,ClientDetailsSerializer,JobSeekerSerializer
 from .permissions import IsJobSeeker,IsOwner,IsOwnerForMedia    
-# Create your views here.
-class JobseekerView(ListCreateAPIView):
-    def get_queryset(self):
-        print(self.request.user)
-        return JobSeeker.objects.filter(owner=self.request.user)
-    serializer_class=JobSeekerSerializer
-    permission_classes=[IsJobSeeker]
+from rest_framework import authentication
+from django.http import JsonResponse
+from django.core.serializers import serialize
+import json
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework import status
+from rest_framework.response import Response
 
-class JobSeekerDetails(RetrieveUpdateDestroyAPIView):
-    def get_queryset(self):
- 
-        print(self.request.user)
 
-        return JobSeeker.objects.filter(owner=self.request.user)
-    serializer_class=JobSeekerSerializer
-    permission_classes=[IsOwner]
-class UserMediarView(ListCreateAPIView):
-    queryset=UserMedia.objects.all()
-    serializer_class=MediaSerializer
-    permission_classes=[IsJobSeeker]
 
-class UserMediavDetails(RetrieveUpdateDestroyAPIView):
-    queryset=UserMedia.objects.all()
-    serializer_class=MediaSerializer
-    permission_classes=[IsOwnerForMedia]
-    # def get_queryset(self):
-    #     return self.queryset.filter(owner=self.request.user)
 
-    # def put(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     # instance.delete_files()
-    #     # instance.save()
-    #     print(instance)
-    #     return Response({"error": "Invalid credentials"}, status=401)
+
+
+
+
+
+class GetAllJobSeekerInfo(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        userInfo=JobSeeker.objects.all() 
+        userMedia=UserMedia.objects.all() 
+        userDetails=ClientDetails.objects.all() 
+        
+        s1 = JobSeekerSerializer(userInfo,many=True)
+        s2 = MediaSerializer(userMedia,many=True)
+        s3 = ClientDetailsSerializer(userDetails,many=True)
+
+        data = {"userInfo" : s1.data , "userMedia" : s2.data , "userDetails" : s3.data}
+        return JsonResponse (data,safe=False,status=200)
+
+class GetJobSeekerInfo(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        userInfo=JobSeeker.objects.filter(owner=request.user) 
+        userMedia=UserMedia.objects.filter(owner=request.user) 
+        userDetails=ClientDetails.objects.filter(owner=request.user) 
+        
+        s1 = JobSeekerSerializer(userInfo,many=True)
+        s2 = MediaSerializer(userMedia,many=True)
+        s3 = ClientDetailsSerializer(userDetails,many=True)
+
+        data = {"userInfo" : s1.data[0] , "userMedia" : s2.data[0] , "userDetails" : s3.data[0]}
+        return JsonResponse (data,safe=False,status=200)
+
+class UpdateJobSeekerInfo(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def put(self, request, *args, **kwargs):
+
+        userInfo=JobSeeker.objects.filter(owner=request.user) 
+        userMedia=UserMedia.objects.filter(owner=request.user) 
+        userDetails=ClientDetails.objects.filter(owner=request.user) 
+        data = json.loads(request.body)
+        print(data)
+        userInfo.update(**data['userInfo'])
+        userMedia.update(**data['userMedia'])
+        userDetails.update(**data['userDetails'])
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class GetJobSeekerInterview(APIView):
+    permission_classes=[IsJobSeeker,IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        user = JobSeeker.objects.filter(owner = request.user)
+        interviews=Interview.objects.filter(jobseeker=user[0]) 
+
+        s1 = InterviewsSerializer(interviews,many=True)
+
+        data = {"interviews" : s1.data }
+        return JsonResponse (data,safe=False,status=200)
