@@ -38,10 +38,13 @@ class LoginSerializer(serializers.ModelSerializer[User]):
         model=User
         fields=['email','password','username','tokens']
     def validate(self, attrs):
+        username=attrs.get('username', '')
         email=attrs.get('email', '')
         password=attrs.get('password', '')
-        print(email,password)
+        print(email)
+        print(username,password)
         user=auth.authenticate(email=email,password=password)
+        print(user)
        
         if  user is None:
             raise serializers.ValidationError('A user with this email and password was not found.')   
