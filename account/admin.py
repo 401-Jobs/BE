@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser,Company,ClientDetails,JobSeeker,UserMedia
+from .models import CustomUser,Company,ClientDetails,JobSeeker,UserMedia,Interview,ShortList,RecentlyViewd
 # Register your models here.
 from django.contrib.auth.admin import UserAdmin
 
@@ -21,3 +21,6 @@ admin.site.register(Company)
 admin.site.register(ClientDetails)
 admin.site.register(JobSeeker)
 admin.site.register(UserMedia)
+admin.site.register(ShortList)
+admin.site.register(Interview)
+admin.site.register(RecentlyViewd)

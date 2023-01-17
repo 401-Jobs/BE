@@ -43,7 +43,7 @@ class LoginSerializer(serializers.ModelSerializer[User]):
         password=attrs.get('password', '')
         print(email)
         print(username,password)
-        user=auth.authenticate(username=username,password=password)
+        user=auth.authenticate(email=email,password=password)
         print(user)
        
         if  user is None:

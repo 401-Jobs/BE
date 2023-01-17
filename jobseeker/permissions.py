@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission
 class IsJobSeeker(BasePermission):
     def has_permission(self, request, view):
 
-        print("INISDE PERMISSION : ", request.user.is_authenticated )
+        print("INISDE PERMISSION : ", request.user.is_authenticated)
 
         if request.method == 'GET' :
             return True

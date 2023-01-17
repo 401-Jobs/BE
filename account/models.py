@@ -11,6 +11,9 @@ class CustomUser(AbstractUser):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_company=models.BooleanField(default=False)
+
+    USERNAME_FIELD='email'
+    REQUIRED_FIELDS = ['username']
     
     def tokens(self):
         refresh=RefreshToken.for_user(self)
@@ -19,6 +22,8 @@ class CustomUser(AbstractUser):
             'access':str(refresh.access_token)
 
         }
+    def __str__(self) -> str:
+         return self.username
 
 
 class JobSeeker(models.Model):
@@ -29,7 +34,12 @@ class JobSeeker(models.Model):
     IsSubscribed=models.BooleanField(default=False,null=True)
     experiance = models.IntegerField(default=0,null=True)
 
+    def __str__(self) -> str:
+        return self.owner.username
 
+
+
+    
 
 class UserMedia(models.Model):
         video=models.FileField(upload_to='media/%y',null=True)
@@ -37,6 +47,8 @@ class UserMedia(models.Model):
         owner=models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
         CV=models.FileField(upload_to='media/%y',null=True)
 
+        def __str__(self) -> str:
+            return "For  " + self.owner.username
 
 class ClientDetails(models.Model):
     education=models.CharField(max_length=200, null=True)
@@ -46,6 +58,8 @@ class ClientDetails(models.Model):
     jobTitle = models.CharField(max_length=200,null=True)
     owner=models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
 
+    def __str__(self) -> str:
+        return "For  " + self.owner.username
 
 
 class Company(models.Model):
@@ -57,6 +71,12 @@ class Company(models.Model):
     about_company = models.TextField(null=True)
     logo = models.FileField(upload_to='media/%y',null=True)
 
+    def __str__(self) -> str:
+        return "For  " + self.owner.username
+
+class RecentlyViewd(models.Model):
+    jobseeker= models.ForeignKey( JobSeeker,on_delete=models.CASCADE, null=True, blank=True)
+    company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True)
 
 class Interview(models.Model):
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True     )
@@ -65,7 +85,12 @@ class Interview(models.Model):
     notes = models.TextField()
     isApproved_jobseeker = models.BooleanField(null=True)
 
+    def __str__(self) -> str:
+        return "For  " + self.company.owner.username + "  and  " + self.jobseeker.owner.username
 
 class ShortList(models.Model):
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True)
     jobseeker= models.ForeignKey( JobSeeker,on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return "For  " + self.company.owner.username + "  and  " + self.jobseeker.owner.username

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import UserMedia,JobSeeker,ClientDetails
+from account.models import Interview, UserMedia,JobSeeker,ClientDetails
 class MediaSerializer(serializers.ModelSerializer):
         class Meta:
             model= UserMedia
@@ -12,3 +12,8 @@ class ClientDetailsSerializer(serializers.ModelSerializer):
         class Meta:
             model= ClientDetails
             fields='__all__'
+
+class InterviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interview
+        fields='__all__'
