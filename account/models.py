@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password
 # Create your models here.
+from django.contrib.auth.hashers import make_password
+
+
 class CustomUser(AbstractUser):
     username=models.CharField(max_length=255,unique=True)
     email=models.EmailField(max_length=255,unique=True)
@@ -11,6 +15,10 @@ class CustomUser(AbstractUser):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_company=models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS = ['username']
@@ -25,6 +33,11 @@ class CustomUser(AbstractUser):
     def __str__(self) -> str:
          return self.username
 
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
 
 class JobSeeker(models.Model):
     owner= models.OneToOneField( CustomUser,on_delete=models.CASCADE, null=True, blank=True)
@@ -37,9 +50,6 @@ class JobSeeker(models.Model):
     def __str__(self) -> str:
         return self.owner.username
 
-
-
-    
 
 class UserMedia(models.Model):
         video=models.FileField(upload_to='media/%y',null=True)
@@ -77,6 +87,9 @@ class Company(models.Model):
 class RecentlyViewd(models.Model):
     jobseeker= models.ForeignKey( JobSeeker,on_delete=models.CASCADE, null=True, blank=True)
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return  self.company.company_name + " Viewd " + self.jobseeker.owner.username
 
 class Interview(models.Model):
     company= models.ForeignKey( Company,on_delete=models.CASCADE, null=True, blank=True     )

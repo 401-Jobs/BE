@@ -18,7 +18,7 @@ from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 # Create your views here.
 
-from account.models import JobSeeker,ClientDetails,UserMedia, Company
+from account.models import JobSeeker,ClientDetails,UserMedia, Company , RecentlyViewd , Interview
 
 
 
@@ -41,6 +41,9 @@ def init_new_jobseeker_user(user):
     city=  None,
     jobTitle=  None,
     owner=    user,)
+
+
+    
 
   seeker.save()
   seekerMedia.save()
@@ -82,6 +85,8 @@ class RegisterView(generics.GenericAPIView):
         Util.send_email(data)
         print(user_data)
         return Response(user_data,status=status.HTTP_201_CREATED)
+        # Return Redirect HostREact?Token={Token}
+        # INside React Header Auth + Body Passwords
 
 class VerifyEmail(views.APIView):
     serializer_class=EmailVerification

@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     #apps
     'authnticaton',
     'jobseeker',
-    'account'
+    'account',
+    'company',
 ]
 
 # SWAGGER_SETTINGS = {
