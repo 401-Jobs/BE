@@ -114,12 +114,14 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-<<<<<<< Updated upstream
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-=======
     "default": {
         "ENGINE": env.str("DATABASE_ENGINE"),
         "NAME": env.str("DATABASE_NAME"),
@@ -127,7 +129,7 @@ DATABASES = {
         "PASSWORD": env.str("DATABASE_PASSWORD"),
         "HOST": env.str("DATABASE_HOST"),
         "PORT": env.int("DATABASE_PORT"),
->>>>>>> Stashed changes
+
     }
 }
 
@@ -185,18 +187,12 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'media/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_USE_TLS=True
-<<<<<<< Updated upstream
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_HOST_USER="finalprojectasac401@gmail.com"
-EMAIL_HOST_PASSWORD='zygwxkbnkvtypthg'
 
-=======
 EMAIL_HOST= env.str("EMAIL_HOST")
 EMAIL_PORT=env.int("EMAIL_PORT")
 EMAIL_HOST_USER=env.str("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD=env.str("EMAIL_HOST_PASSWORD")
->>>>>>> Stashed changes
+
 
 
 
