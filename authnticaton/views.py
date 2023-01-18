@@ -172,6 +172,7 @@ class LoginApiView(generics.GenericAPIView):
     serializer=self.serializer_class(data=user)
     serializer.is_valid(raise_exception=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
 class LogoutApiView(generics.GenericAPIView):
   permission_classes = (permissions.IsAuthenticated,)
   serializer_class=LogoutSerializer
@@ -181,3 +182,4 @@ class LogoutApiView(generics.GenericAPIView):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data,status=status.HTTP_204_NO_CONTENT)
+    
