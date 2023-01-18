@@ -11,7 +11,7 @@ env = environ.Env(
     DEBUG=(bool, True),
     ENVIRONMENT=(str, "PRODUCTION"),
     ALLOW_ALL_ORIGINS=(bool, False),
-    ALLOWED_HOSTS=(list, []),
+    ALLOWED_HOSTS=(list, ['*']),
     ALLOWED_ORIGINS=(list, []),
     DATABASE_ENGINE=(str, "django.db.backends.sqlite3"),
     DATABASE_NAME=(str, BASE_DIR / "db.sqlite3"),
@@ -79,8 +79,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.common.CommonMiddleware',
