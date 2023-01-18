@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password
 # Create your models here.
 from django.contrib.auth.hashers import make_password
 
@@ -14,6 +15,10 @@ class CustomUser(AbstractUser):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_company=models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS = ['username']

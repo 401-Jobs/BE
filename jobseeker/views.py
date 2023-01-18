@@ -53,14 +53,18 @@ class UpdateJobSeekerInfo(APIView):
         userInfo.update(**data['userInfo'])
         userMedia.update(**data['userMedia'])
         userDetails.update(**data['userDetails'])
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        s1 = JobSeekerSerializer(userInfo,many=True)
+        s2 = MediaSerializer(userMedia,many=True)
+        s3 = ClientDetailsSerializer(userDetails,many=True)
+        data = {"userInfo" : s1.data[0] , "userMedia" : s2.data[0] , "userDetails" : s3.data[0]}
+        return JsonResponse (data,safe=False,status=200)
 
 class GetJobSeekerInterview(APIView):
     permission_classes=[IsJobSeeker,IsAuthenticated]
     def get(self, request, *args, **kwargs):
         user = JobSeeker.objects.filter(owner = request.user)
         interviews=Interview.objects.filter(jobseeker=user[0])
-        
+
         companies = []
 
         for interview in interviews:
