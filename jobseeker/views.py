@@ -64,7 +64,7 @@ class GetJobSeekerInterview(APIView):
     def get(self, request, *args, **kwargs):
         user = JobSeeker.objects.filter(owner = request.user)
         interviews=Interview.objects.filter(jobseeker=user[0])
-        
+
         companies = []
 
         for interview in interviews:
