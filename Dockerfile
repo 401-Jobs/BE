@@ -6,6 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Set work directory
 COPY requirments.txt /code/
+COPY . /code/
 WORKDIR /code
 
 # Install dependencies
