@@ -41,13 +41,13 @@ from django.contrib.auth.hashers import make_password
 
 
 class UserManger(BaseUserManager):
-    def create_user(self,username,email,password=None):
+    def create_user(self,username,email,password=None,is_company=False):
         if username is None:
             raise TypeError('users should have username')
         if email is None:
             raise TypeError('users shoud have email')
         
-        user=self.model(username=username,email=self.normalize_email(email))
+        user=self.model(username=username,email=self.normalize_email(email),is_company=is_company)
         user.set_password(password)
         user.save()
         return user
