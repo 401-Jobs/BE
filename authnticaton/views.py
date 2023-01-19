@@ -4,22 +4,26 @@ from .serializers import RegisterSerializer,EmailVerification,LoginSerializer,Lo
 from rest_framework.response import Response
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from .renderers import UserJSONRenderer
-from rest_framework_simplejwt.tokens import RefreshToken
+
+import time
+
 from account.models import CustomUser as User
 from .utils import Util
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-import jwt
+from rest_framework_simplejwt.tokens import RefreshToken
+# import jwt
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 # Create your views here.
+from rest_framework_simplejwt.authentication import JWTAuthentication 
 
 from account.models import JobSeeker,ClientDetails,UserMedia, Company , RecentlyViewd , Interview
-
+from rest_framework.authtoken.models import Token
 
 
 def init_new_jobseeker_user(user):
@@ -67,24 +71,37 @@ def init_new_company_user(user):
 
 class RegisterView(generics.GenericAPIView):
     serializer_class=RegisterSerializer
+    authentication_classes = (JWTAuthentication,)
     def post(self,request):
-        user=request.data
-        serializer=self.serializer_class(data=user)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        is_company = bool(request.data.get('is_company'))
+        if not username or not email or not password:
+            return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_data=serializer.data
+        try:
+            user = User.objects.create_user(username, email, password,is_company)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        user=User.objects.get(email=user_data['email'])
-        token=RefreshToken.for_user(user).access_token
+        init_new_jobseeker_user(user)
+        init_new_company_user(user)
+        token, created = Token.objects.get_or_create(user=user)
+
+        #########################
+        time.sleep(5)
+
+        token=token
         current_site=get_current_site(request).domain
         relativeLink=reverse('verify')
         absurl='http://'+current_site+relativeLink+"?token="+str(token)
         email_body='Hi '+user.username+' use link below to verifiy\n'+absurl
         data={'email_body':email_body,'to_email':user.email,'email_subject':'Verify Your Email'}
         Util.send_email(data)
-        print(user_data)
-        return Response(user_data,status=status.HTTP_201_CREATED)
+        #########################
+        print(token)
+        return Response({ "token": str(token)},status=status.HTTP_201_CREATED)
         # Return Redirect HostREact?Token={Token}
         # INside React Header Auth + Body Passwords
 
@@ -95,23 +112,17 @@ class VerifyEmail(views.APIView):
     # @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self,request):
       token=request.GET.get('token')
+     
       try:
-        payload=jwt.decode (jwt=token,key=settings.SECRET_KEY,algorithms='HS256')
-        user=User.objects.get(id=payload['user_id'])
-        if not user.is_verified:
-            user.is_verified=True
-            user.save()
-            if user.is_company == False: 
-              init_new_jobseeker_user(user)
-            else:
-              init_new_company_user(user)
-   
-        # Return Rediriect to React verified Page
+        token_obj = Token.objects.get(key=token)
+
+        userobj = User.objects.get(email = token_obj.user.email)
+        userobj.is_verified = True
+        userobj.save()
         return Response({'email':'Successfuly activated'},status=status.HTTP_200_OK)
-      except jwt.ExpiredSignatureError  as identifier:
-        return Response({'error':'Actiation  Expired'},status=status.HTTP_400_BAD_REQUEST)
-      except jwt.exceptions.DecodeError as identifier:
-         return Response({'error':'invaild  token'},status=status.HTTP_400_BAD_REQUEST)
+      except:
+        return Response({'error':'invaild  token'},status=status.HTTP_400_BAD_REQUEST)
+
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
