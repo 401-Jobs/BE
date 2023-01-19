@@ -83,6 +83,8 @@ class RegisterView(generics.GenericAPIView):
 
         #########################
         time.sleep(5)
+        print("BEFORE ERROR ")
+        print( RefreshToken.for_user(user))
         token=RefreshToken.for_user(user).access_token
         current_site=get_current_site(request).domain
         relativeLink=reverse('verify')
