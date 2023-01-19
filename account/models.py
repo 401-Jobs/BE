@@ -1,12 +1,81 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser,BaseUserManager,AbstractBaseUser,PermissionsMixin
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 # Create your models here.
 from django.contrib.auth.hashers import make_password
 
 
-class CustomUser(AbstractUser):
+# class CustomUser(AbstractUser):
+#     username=models.CharField(max_length=255,unique=True)
+#     email=models.EmailField(max_length=255,unique=True)
+#     is_verified=models.BooleanField(default=False)    
+#     is_active=models.BooleanField(default=True)
+#     is_staff=models.BooleanField(default=False)
+#     created_at=models.DateTimeField(auto_now_add=True)
+#     updated_at=models.DateTimeField(auto_now=True)
+#     is_company=models.BooleanField(default=False)
+#     def save(self, *args, **kwargs):
+#         if self.password:
+#             self.password = make_password(self.password)
+#         super().save(*args, **kwargs)
+
+#     USERNAME_FIELD='email'
+#     REQUIRED_FIELDS = ['username']
+    
+#     def tokens(self):
+#         refresh=RefreshToken.for_user(self)
+#         return{
+#             'refresh':str(refresh),
+#             'access':str(refresh.access_token)
+
+#         }
+#     def __str__(self) -> str:
+#          return self.username
+
+#     def save(self, *args, **kwargs):
+#         if self.password:
+#             self.password = make_password(self.password)
+#         super().save(*args, **kwargs)
+
+
+class UserManger(BaseUserManager):
+    def create_user(self,username,email,password=None,is_company=False):
+        if username is None:
+            raise TypeError('users should have username')
+        if email is None:
+            raise TypeError('users shoud have email')
+        
+        user=self.model(username=username,email=self.normalize_email(email),is_company=is_company)
+        user.set_password(password)
+        user.save()
+        return user
+    
+    def create_superuser(self,username,email,password):
+        user=self.create_user(
+            username,
+            email,
+            password
+        )
+        user.is_staff=True
+        user.is_superuser=True
+        user.is_active=True
+        user.save()
+        return user
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
+    def tokens(self):
+        refresh=RefreshToken.for_user(self)
+        return{
+            'refresh':str(refresh),
+            'access':str(refresh.access_token)
+
+        }
+class CustomUser(AbstractBaseUser,PermissionsMixin):
     username=models.CharField(max_length=255,unique=True)
     email=models.EmailField(max_length=255,unique=True)
     is_verified=models.BooleanField(default=False)    
@@ -22,6 +91,7 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS = ['username']
+    objects = UserManger()
     
     def tokens(self):
         refresh=RefreshToken.for_user(self)
@@ -33,10 +103,16 @@ class CustomUser(AbstractUser):
     def __str__(self) -> str:
          return self.username
 
-    def save(self, *args, **kwargs):
-        if self.password:
-            self.password = make_password(self.password)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.password:
+    #         self.password = make_password(self.password)
+    #     super().save(*args, **kwargs)
+
+
+
+
+
+
 
 
 class JobSeeker(models.Model):

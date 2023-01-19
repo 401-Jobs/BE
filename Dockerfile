@@ -1,3 +1,4 @@
+# Python version
 FROM python:3
 
 # Set environment variables
@@ -8,8 +9,8 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /code
 
 # Install dependencies
-COPY requirments.txt /code/
-RUN pip install -r requirments.txt
+COPY ./requirements.txt /code/
+RUN pip install -r ./requirements.txt
 
 # Copy project
 COPY . /code/
