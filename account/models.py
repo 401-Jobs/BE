@@ -63,6 +63,18 @@ class UserManger(BaseUserManager):
         user.is_active=True
         user.save()
         return user
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
+    def tokens(self):
+        refresh=RefreshToken.for_user(self)
+        return{
+            'refresh':str(refresh),
+            'access':str(refresh.access_token)
+
+        }
 class CustomUser(AbstractBaseUser,PermissionsMixin):
     username=models.CharField(max_length=255,unique=True)
     email=models.EmailField(max_length=255,unique=True)
@@ -72,10 +84,10 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     is_company=models.BooleanField(default=False)
-    # def save(self, *args, **kwargs):
-    #     if self.password:
-    #         self.password = make_password(self.password)
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.password:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     USERNAME_FIELD='email'
     REQUIRED_FIELDS = ['username']
