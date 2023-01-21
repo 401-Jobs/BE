@@ -1,33 +1,25 @@
 
 import time
-from accounts.models import JobSeeker,ClientDetails,UserMedia, Company , RecentlyViewd , Interview, CustomUser as User
+from accounts.models import ClientDetails,UserMedia, Company , RecentlyViewd , Interview, CustomUser as User
+from accounts.models import PersonalInfo,Contact,Education,WorkExperiance,UserMedia,ClientDetails
+
 
 def init_new_jobseeker_user(user):
-  seeker = JobSeeker(owner=user,        
-    phone_number= None,
-    github =   None,   
-    protofolio=   None,
-    IsSubscribed= None,
-    experiance =  None,)
+  PersonalInf   = PersonalInfo(owner=user)     
+  Contac        = Contact(owner=user)     
+  Educatio      = Education(owner=user)     
+  WorkExperianc = WorkExperiance(owner=user)     
+  UserMedi      =    UserMedia(owner=user)     
+  ClientDetail  = ClientDetails(owner=user) 
 
-  seekerMedia = UserMedia(  video=None, 
-    image=None, 
-    owner=user, 
-    CV=   None, )
-
-  seekerDetails = ClientDetails( education=None,
-    skilles=  None,
-    country=  None,
-    city=  None,
-    jobTitle=  None,
-    owner=    user,)
+  PersonalInf.save()  
+  Contac.save()       
+  Educatio.save()     
+  WorkExperianc.save()
+  UserMedi.save()     
+  ClientDetail.save()
 
 
-    
-
-  seeker.save()
-  seekerMedia.save()
-  seekerDetails.save()
 
 def init_new_company_user(user):
   print(user)
@@ -59,7 +51,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 
 import time
-
+from django.shortcuts import render, redirect
 
 
 class RegisterView(generics.GenericAPIView):
@@ -75,8 +67,12 @@ class RegisterView(generics.GenericAPIView):
         user_data=serializer.data
 
         user=User.objects.get(email=user_data['email'])
-        init_new_jobseeker_user(user)
-        init_new_company_user(user)
+
+        if user.is_company == False or user.is_company == "true":
+          init_new_jobseeker_user(user)
+        else:
+          init_new_company_user(user)
+
         token=RefreshToken.for_user(user).access_token
         current_site=get_current_site(request).domain
         relativeLink=reverse('verify')
@@ -92,9 +88,6 @@ class RegisterView(generics.GenericAPIView):
 
 class VerifyEmail(views.APIView):
     serializer_class=EmailVerification
-
-    # token_param_config=openapi.Parameter('token',in_=openapi.IN_QUERY,description='Dscription',type=openapi.TYPE_STRING)
-    # @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self,request):
 
         try:
@@ -120,6 +113,11 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             user=User.objects.get(email=email)
             uidb64=urlsafe_base64_encode(smart_bytes(user.id))
             token=PasswordResetTokenGenerator().make_token(user)
+
+            print(token)
+            print()
+            print(uidb64)
+
             current_site=get_current_site(request=request).domain
             relativeLink=reverse('password-reset-confirm',kwargs={'uidb64':uidb64,'token':token})
             absurl='http://'+current_site+relativeLink
@@ -136,7 +134,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
     def get(self, request, uidb64, token):
 
-        redirect_url = request.GET.get('redirect_url')
+        
 
         try:
             id = smart_str(urlsafe_base64_decode(uidb64))
@@ -144,7 +142,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
             if not PasswordResetTokenGenerator().check_token(user, token):
               return Response({'error':'Token is not valid'})
-            return Response({'success':True,'udb64':uidb64,'token':token,},status=status.HTTP_200_OK)
+            return redirect(f'http://127.0.0.1:8000/?udb64={uidb64}&token={token}')
 
         except DjangoUnicodeDecodeError as identifier:
             try:

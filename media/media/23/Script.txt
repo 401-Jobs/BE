@@ -1,0 +1,73 @@
+Intro Slide
+===========
+Abd : Good morning Everyone, and welcome to Job Hunter presentation, id like
+	to thank you all for joining us today, before we begin id like to introduce 
+	our team
+
+Team Slide
+===========
+Abd : Me the speaker Abd alasal, am joining you today from irbid
+Ibra   :
+Bashar :
+Moh    :
+Monther :
+
+Problem Domain:
+==============
+Moh: 	As we all know one of the toughest and most gruesome things is to look for a job.
+	That's why we made it our mission to make it easier.
+	We created a program where you can get jobs from multiple sites at once.
+	To do that we selected a few websites to get the data from which are:
+	Gulf talent, linkedin, bayt, naukrigulf, and google jobs.
+	Using our program you will be able to save time and effort when looking for jobs and make
+	this process more accessible
+
+
+WireFrame
+=========
+ibra :
+
+UML
+=======
+ibra:
+
+Live Demo:
+==========
+Abd:
+
+
+Bashar:
+
+
+
+Tecno slide
+===========
+Moh
+
+
+
+Challenges
+==========
+Monther : the biggest challenges  that we have  to deal with is  anti scrapping and the legal  issue form the websites 
+	- learning  new  technologies such as Selenium library ,GUIs and SQLite - distributing the tasks  and mange to be finished by the deadline 
+	--- our future goals for this project  
+	- publishing the  project into live  server websites  with monetization
+
+Future Goals
+============
+Monther: 
+
+
+Questions
+=========
+
+
+
+
+
+
+
+
+
+
+
